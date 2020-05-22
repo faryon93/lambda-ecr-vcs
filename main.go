@@ -1,6 +1,6 @@
 package main
 
-// playground
+// lambda-ecr-push-vcs
 // Copyright (C) 2020 Maximilian Pachl
 
 // This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@ package main
 // ---------------------------------------------------------------------------------------
 
 import (
-	"errors"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -29,8 +28,8 @@ import (
 
 	"log"
 
-	"playground/eventbridge"
-	"playground/image"
+	"github.com/faryon93/lambda-ecr-push-vcs/eventbridge"
+	"github.com/faryon93/lambda-ecr-push-vcs/image"
 )
 
 // ---------------------------------------------------------------------------------------
@@ -38,7 +37,7 @@ import (
 // ---------------------------------------------------------------------------------------
 
 type Response struct {
-	image.VcsInfo
+	*image.VcsInfo
 	Image string `json:"image"`
 }
 
@@ -55,22 +54,15 @@ var (
 // ---------------------------------------------------------------------------------------
 
 func Handle(event eventbridge.EcrEvent) (*Response, error) {
-	if EcrClient == nil {
-		log.Println("ecr client not initialized")
-		return nil, errors.New("ecr client not initialized")
-	}
-
 	vcs, err := image.GetVcsInfo(EcrClient, event.Detail.Repository, event.Detail.ImageTag)
 	if err != nil {
-		return nil, err
+		log.Println("failed to fetch vcs info from ecr image:", err.Error())
 	}
 
 	r := Response{
-		VcsInfo: *vcs,
+		VcsInfo: vcs,
 		Image:   event.GetFullImage(),
 	}
-
-	log.Println(r)
 
 	return &r, nil
 }
@@ -82,7 +74,7 @@ func Handle(event eventbridge.EcrEvent) (*Response, error) {
 func init() {
 	sess, err := session.NewSession(&aws.Config{})
 	if err != nil {
-		log.Println("failed to create aws sess:", err.Error())
+		log.Println("failed to create aws session:", err.Error())
 		return
 	}
 

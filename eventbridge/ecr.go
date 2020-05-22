@@ -1,6 +1,6 @@
 package eventbridge
 
-// playground
+// lambda-ecr-push-vcs
 // Copyright (C) 2020 Maximilian Pachl
 
 // This program is free software: you can redistribute it and/or modify

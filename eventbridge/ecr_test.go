@@ -1,6 +1,6 @@
 package eventbridge
 
-// playground
+// lambda-ecr-push-vcs
 // Copyright (C) 2020 Maximilian Pachl
 
 // This program is free software: you can redistribute it and/or modify
@@ -30,27 +30,27 @@ import (
 
 func TestEcrEvent_GetRegistryUrl(t *testing.T) {
 	tests := []struct {
-		Name string
-		Region    string
-		AccountId string
+		Name        string
+		Region      string
+		AccountId   string
 		ExpectedUrl string
 	}{
-        {"default", "eu-central-1", "1234567", "1234567.dkr.ecr.eu-central-1.amazonaws.com"},
-        {"no-account-id", "eu-central-1", "", ""},
-        {"no-region", "", "1234567", ""},
+		{"default", "eu-central-1", "1234567", "1234567.dkr.ecr.eu-central-1.amazonaws.com"},
+		{"no-account-id", "eu-central-1", "", ""},
+		{"no-region", "", "1234567", ""},
 	}
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-            e := EcrEvent{
-                Region: test.Region,
-                AccountId: test.AccountId,
-            }
+			e := EcrEvent{
+				Region:    test.Region,
+				AccountId: test.AccountId,
+			}
 
-            url := e.GetRegistryUrl()
-            if url != test.ExpectedUrl {
-                t.Errorf("GetRegistryUrl should return \"%s\" but returned \"%s\"",
-                    test.ExpectedUrl, url)
-            }
+			url := e.GetRegistryUrl()
+			if url != test.ExpectedUrl {
+				t.Errorf("GetRegistryUrl should return \"%s\" but returned \"%s\"",
+					test.ExpectedUrl, url)
+			}
 		})
 	}
 }

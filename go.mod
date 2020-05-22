@@ -1,4 +1,4 @@
-module playground
+module github.com/faryon93/lambda-ecr-push-vcs
 
 go 1.14
 

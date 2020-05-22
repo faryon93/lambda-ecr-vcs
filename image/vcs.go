@@ -1,6 +1,6 @@
 package image
 
-// playground
+// lambda-ecr-push-vcs
 // Copyright (C) 2020 Maximilian Pachl
 
 // This program is free software: you can redistribute it and/or modify
@@ -36,13 +36,13 @@ const (
 )
 
 var (
-	ErrMalformedResponse = errors.New("malformed response")
-	ErrHistoryEmpty = errors.New("image history is empty")
-	ErrV1ManifestMissing = errors.New("missing v1Compatibility manifest")
+	ErrMalformedResponse   = errors.New("malformed response")
+	ErrHistoryEmpty        = errors.New("image history is empty")
+	ErrV1ManifestMissing   = errors.New("missing v1Compatibility manifest")
 	ErrConfigObjectMissing = errors.New("missing config object")
 	ErrLabelsObjectMissing = errors.New("missing labels object")
+	ErrNoEcrClient         = errors.New("ecr client not initialized")
 )
-
 
 // ---------------------------------------------------------------------------------------
 //  types
@@ -61,6 +61,10 @@ type VcsInfo struct {
 // ---------------------------------------------------------------------------------------
 
 func GetVcsInfo(client *ecr.ECR, repo string, tag string) (*VcsInfo, error) {
+	if client == nil {
+		return nil, ErrNoEcrClient
+	}
+
 	params := ecr.BatchGetImageInput{
 		AcceptedMediaTypes: aws.StringSlice([]string{ManifestType}),
 		RepositoryName:     aws.String(repo),
