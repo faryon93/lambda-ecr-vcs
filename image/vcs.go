@@ -25,6 +25,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ecr"
 	"github.com/valyala/fastjson"
+	"strings"
 )
 
 // ---------------------------------------------------------------------------------------
@@ -119,11 +120,17 @@ func parseVcsInfo(manifest string) (*VcsInfo, error) {
 		return nil, ErrLabelsObjectMissing
 	}
 
-	return &VcsInfo{
+	vcs := VcsInfo{
 		RepoUrl: string(labels.GetStringBytes("org.label-schema.vcs-url")),
 		Branch:  string(labels.GetStringBytes("org.factory360.vcs-branch")),
 		Author:  string(labels.GetStringBytes("org.factory360.vcs-author")),
 		Ref:     string(labels.GetStringBytes("org.label-schema.vcs-ref")),
 		Message: string(labels.GetStringBytes("org.factory360.vcs-message")),
-	}, nil
+	}
+
+	// remove leading and trailing quotation marks
+	vcs.Message = strings.TrimPrefix(vcs.Message, "\"")
+	vcs.Message = strings.TrimSuffix(vcs.Message, "\"")
+
+	return &vcs, nil
 }
