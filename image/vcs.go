@@ -21,10 +21,11 @@ package image
 // ---------------------------------------------------------------------------------------
 
 import (
-	"errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ecr"
 	"github.com/valyala/fastjson"
+
+	"errors"
 	"strings"
 )
 
@@ -129,8 +130,10 @@ func parseVcsInfo(manifest string) (*VcsInfo, error) {
 	}
 
 	// remove leading and trailing quotation marks
+	vcs.Message = strings.Replace(vcs.Message, "\\n", "\n", -1)
 	vcs.Message = strings.TrimPrefix(vcs.Message, "\"")
 	vcs.Message = strings.TrimSuffix(vcs.Message, "\"")
+	vcs.Message = strings.TrimSpace(vcs.Message)
 
 	return &vcs, nil
 }

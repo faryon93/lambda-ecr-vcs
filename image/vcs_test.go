@@ -57,6 +57,34 @@ func TestGetVcsInfo_MessageQuotes(t *testing.T) {
 	}
 }
 
+func TestGetVcsInfo_Newlines(t *testing.T) {
+	testManifest := `{"history": [{"v1Compatibility": "{\"config\": {\"Labels\": {\"org.factory360.vcs-message\": \"\n\ttest\n\t\"}}}"}]}`
+	vcs, err := parseVcsInfo(testManifest)
+	if err != nil {
+		t.Error("parseVcsInfo should not return an error:", err.Error())
+		return
+	}
+
+	if vcs.Message != "test" {
+		t.Errorf("vcs.Message should trim leading/trailing whitespaces but retunred: \"%s\"",
+			vcs.Message)
+	}
+}
+
+func TestGetVcsInfo_QuotedSpaces(t *testing.T) {
+	testManifest := `{"history": [{"v1Compatibility": "{\"config\": {\"Labels\": {\"org.factory360.vcs-message\": \"\\n\\ttest\\n\\t\"}}}"}]}`
+	vcs, err := parseVcsInfo(testManifest)
+	if err != nil {
+		t.Error("parseVcsInfo should not return an error:", err.Error())
+		return
+	}
+
+	if vcs.Message != "test" {
+		t.Errorf("vcs.Message should trim leading/trailing quoted whitespaces but retunred: \"%s\"",
+			vcs.Message)
+	}
+}
+
 // ---------------------------------------------------------------------------------------
 //  helpers
 // ---------------------------------------------------------------------------------------
